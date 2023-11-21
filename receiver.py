@@ -7,7 +7,7 @@ class ReceiverProcess:
         """ deliver data from the transport layer RDT receiver to the application layer
         :param data: a character received by the RDT RDT receiver
         :return: no return value
-        """
+        # """
         ReceiverProcess.__buffer.append(data)
         return
 
@@ -32,7 +32,8 @@ class RDTReceiver:
             :return: True -> if the reply is corrupted | False ->  if the reply is NOT corrupted
         """
         # TODO provide your own implementation
-        pass
+
+        return ord(packet['data']) != packet['checksum']
 
     @staticmethod
     def is_expected_seq(rcv_pkt, exp_seq):
@@ -42,8 +43,8 @@ class RDTReceiver:
          :return: True -> if ack in the reply match the   expected sequence number otherwise False
         """
         # TODO provide your own implementation
-        pass
 
+        return rcv_pkt["sequence_number"] == exp_seq
 
     @staticmethod
     def make_reply_pkt(seq, checksum):
@@ -67,9 +68,10 @@ class RDTReceiver:
         # TODO provide your own implementation
 
         # deliver the data to the process in the application layer
-        ReceiverProcess.deliver_data(rcv_pkt['data'])
 
-        #reply_pkt = RDTReceiver.make_reply_pkt()
-        #return reply_pkt
+        if (not RDTReceiver.is_corrupted(rcv_pkt) and RDTReceiver.is_expected_seq(rcv_pkt, self.sequence)):
+            ReceiverProcess.deliver_data(rcv_pkt['data'])
+            reply_pkt = RDTReceiver.make_reply_pkt(self.sequence,ord(rcv_pkt['data']))
+            return reply_pkt
 
         return None

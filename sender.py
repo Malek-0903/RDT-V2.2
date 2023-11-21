@@ -38,7 +38,7 @@ class RDTSender:
         :return: the ASCII code of the character, for example ASCII('A') = 65
         """
         # TODO provide your own implementation
-        checksum = None  # you need to change that
+        checksum = ord(data)  # you need to change that
         return checksum
 
     @staticmethod
@@ -59,9 +59,11 @@ class RDTSender:
         """ Check if the received reply from receiver is corrupted or not
         :param reply: a python dictionary represent a reply sent by the receiver
         :return: True -> if the reply is corrupted | False ->  if the reply is NOT corrupted
+
         """
         # TODO provide your own implementation
-        pass
+
+        return ord(reply['data']) != RDTSender.get_checksum(reply['data'])
 
     @staticmethod
     def is_expected_seq(reply, exp_seq):
@@ -71,7 +73,7 @@ class RDTSender:
         :return: True -> if ack in the reply match the   expected sequence number otherwise False
         """
         # TODO provide your own implementation
-        pass
+        return reply["ack"] == exp_seq
 
     @staticmethod
     def make_pkt(seq, data, checksum):
